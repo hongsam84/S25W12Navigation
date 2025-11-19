@@ -1,42 +1,55 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var viewModel = SongViewModel()
-    
     var body: some View {
-        NavigationStack(path: $viewModel.path) {
-            List(viewModel.songs) { song in
-//                NavigationLink(destination: SongDetailView(song: song)) {
-                NavigationLink(value: song) {
-                    HStack {
-                        VStack(alignment: .leading) {
-                            Text(song.title)
-                                .font(.headline)
-                            Text(song.singer)
-                                .font(.subheadline)
-                                .foregroundColor(.gray)
-                        }
-                    }
+        TabView {
+            SongView()
+                .tabItem {
+                    Image(systemName: "list.bullet")
+                    Text("Songs")
                 }
-            }
-            .navigationDestination(for: Song.self) { song in
-                SongDetailView(song: song)
-            }
+            SingerView()
+                .tabItem {
+                    Image(systemName: "person")
+                    Text("Singer")
+                }
         }
     }
 }
 
-//struct SingerView: View {
-//    var body: some View {
-//        NavigationStack {
-//            Text("가수 화면")
-//
-////            NavigationLink(destination: SingerView()) {
-////                Text("노래 화면으로 이동")
-////            }
-//        }
-//    }
-//}
+struct SongView: View {
+    @State private var viewModel = SongViewModel()
+    
+    var body: some View {
+        NavigationStack(path: $viewModel.path) {
+            SongListView(viewModel: viewModel)
+            .navigationDestination(for: Song.self) { song in
+                SongDetailView(song: song)
+            }
+            .navigationTitle("노래")
+        }
+    }
+}
+
+struct SongListView: View {
+    let viewModel: SongViewModel
+    
+    var body: some View {
+        List(viewModel.songs) { song in
+            NavigationLink(value: song) {
+                HStack {
+                    VStack(alignment: .leading) {
+                        Text(song.title)
+                            .font(.headline)
+                        Text(song.singer)
+                            .font(.subheadline)
+                            .foregroundColor(.yellow)
+                    }
+                }
+            }
+        }
+    }
+}
 
 struct SongDetailView: View {
     let song: Song
@@ -63,9 +76,14 @@ struct SongDetailView: View {
         }
         .navigationTitle(song.title)
         #if os(iOS)
-        .navigationBarTitleDisplayMode(.large)
+            .navigationBarTitleDisplayMode(.large)
         #endif
+    }
+}
 
+struct SingerView: View {
+    var body: some View {
+        Text("Singer View")
     }
 }
 
